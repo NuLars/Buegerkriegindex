@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bürgerkrieg-Index</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.style.display = 'none');
+            
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.style.display = 'block';
+            }
+            
+            window.scrollTo(0, 0);
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Candara', sans-serif;
+            background-color: #d6d4d4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Header */
+        header {
+            background-color: #00509e;
+            color: rgb(255, 255, 255);
+            padding: 10px 50px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            box-sizing: border-box;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+            text-align: center;
+        }
+
+        /* Menü */
+        .menu {
+            display: flex;
+            justify-content: center;
+            background-color: #003d73;
+            flex: 1;
+            padding: 120px 20px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            padding: 0px 0;
+            margin-top: 10px;
+            margin-bottom: -25px;
+            margin-right: 80px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu a {
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #ffcc00;
+        }
+
+        /* Hauptbereich */
+        main {
+            flex: 1;
+            margin-top: -20px;
+            flex-grow: 1;
+            padding: 120px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* Abschnitt */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Startseite */
+        #start p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 120px auto;
+        }
+
+        #start h2 {
+            color: #000000;
+            font-size: 25px;
+            margin-bottom: -90px;
+        }
+
+        
+        #methodik p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 120px auto;
+        }
+
+        #methodik h2 {
+            font-size: 25px;
+            color: #000000;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+       
+        #methodik h3 {
+            font-size: 22px;
+            color: #000000; 
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            text-align: center;
+            max-width: 820px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 10px;
+        }
+
+        #methodik h4 {
+            font-size: 28px;
+            color: #000000; 
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            max-width: 820px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 10px;
+        }
+
+        #methodik .daten-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #000000; /* Textfarbe schwarz */
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #impressum p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 120px auto;
+        }
+
+        #impressum h2 {
+            font-size: 25px;
+            color: #000000;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+       
+        #impressum h3 {
+            font-size: 22px;
+            color: #000000; 
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            text-align: center;
+            max-width: 820px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 10px;
+        }
+
+        #impressum h4 {
+            font-size: 28px;
+            color: #000000; 
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            max-width: 820px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 10px;
+        }
+
+        #impressum .daten-text {
+            font-size: 18px;
+            line-height: 1.6;
+            text-align: left;
+            color: #000000;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        #countrySelect {
+            font-size: 16px;
+            padding: 10px;
+            background-color: #a0cbd367;
+            border: 2px solid #00000062;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            margin: 20px 0;
+            width: 250px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #countrySelect:hover {
+            border-color: #00509e;
+        }
+
+        #countryInfo {
+            font-size: 18px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+            text-align: center;
+        }
+        /* Rangliste */
+        #rankList {
+            margin-top: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        /* Sortier-Button */
+        .sortButton {
+            background-color: #003d73;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .sortButton:hover {
+            background-color: #00509e;
+        }
+
+        #rankList table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #rankList th, #rankList td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #rankList th {
+            background-color: #f2f2f2;
+        }
+
+        #rankList tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Umrandung und Hintergrundfärbung */
+        #rankList tr {
+            border: 2px solid transparent; /* Standard transparent */
+        }
+
+        #rankList tr[data-color] {
+            border-color: var(--border-color);
+            background-color: var(--background-color);
+
+    
+        }
+
+        .info.legend {
+            background: white;
+            border: 2px solid #ccc;
+            padding: 10px;
+            font-size: 10px;
+            line-height: 1.5;
+            max-width: 200px;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .legend-color-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-item span {
+            white-space: nowrap;
+        }
+
+        #downloadButton {
+            background-color: #003d73;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        #downloadButton:hover {
+            background-color: #00509e;
+        }
+
+
+        .slideshow-container {
+            position: relative;
+            max-width: 80%;
+            margin: auto;
+            margin-top: -70px;
+            overflow: hidden;
+            background: #f4f4f4;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .mySlides {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            display: none;
+            margin: auto;
+        }
+
+        .slide {
+            text-align: center;
+        }
+
+        .caption {
+            font-size: 18px;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .w3-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 30px;
+            border-radius: 50px;
+        }
+
+        .w3-display-left {
+            left: 15px;
+        }
+
+        .w3-display-right {
+            right: 15px;
+        }
+
+        .w3-button:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+
+        /* Karte */
+        #map {
+            height: 60vh;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+        
+        
+        .voltageLevel {
+            font-style: italic;
+            color: #666;
+            padding-left: 10px;
+        }
+
+
+        #rankList table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #rankList th, #rankList td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #rankList th {
+            background-color: #f2f2f2; /* Light gray for header */
+        }   
+
+        #rankList tr:hover {
+            background-color: #f5f5f5; /* Light gray on hover */
+        }
+
+        .voltageLevel {
+            font-style: italic;
+            color: #666; /* Gray color for voltage levels */
+        }
+
+        .callout {
+            position: fixed;
+            bottom: 20px; /* Abstand vom unteren Rand */
+            right: 20px; /* Abstand vom rechten Rand */
+            max-width: 300px;
+            max-height: 300px;
+            border: 2px solid #00509e; /* Passendes Blau für den Rand */
+            background-color: #003d73; /* Blaues Hintergrund */
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Schatten für besseres Design */
+            z-index: 1000; /* Sicherstellen, dass es oben angezeigt wird */
+        }
+
+        .callout-header {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: -70px;
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-top: 10px;
+            color: white;
+        }
+
+        .callout-container {
+            font-size: 30px;
+        }
+
+        .closebtn {
+            position: absolute;
+            top: 0px;
+            right: 12px;
+            color: white;
+            font-size: 42px;
+            cursor: pointer;
+        }
+
+        .closebtn:hover {
+            color: lightgray;
+        }
+    </style>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-ajax"></script>
+    <script>
+
+        let mapInitialized = false;
+
+    const countryData = [
+        { country: "Iceland", value: 1.4, rank: 1 },
+        { country: "Finland", value: 1.4, rank: 2 },
+        { country: "Norway", value: 1.55, rank: 3 },
+        { country: "Switzerland", value: 1.55, rank: 4 },
+        { country: "New Zealand", value: 1.55, rank: 5 },
+        { country: "Denmark", value: 1.6, rank: 6 },
+        { country: "Ireland", value: 1.65, rank: 7 },
+        { country: "Luxembourg", value: 1.7, rank: 8 },
+        { country: "Canada", value: 1.8, rank: 9 },
+        { country: "Netherlands", value: 1.8, rank: 10 },
+        { country: "Austria", value: 1.9, rank: 11 },
+        { country: "Australia", value: 1.95, rank: 12 },
+        { country: "Slovenia", value: 2, rank: 13 },
+        { country: "Japan", value: 2, rank: 14 },
+        { country: "Belgium", value: 2.05, rank: 15 },
+        { country: "Portugal", value: 2.05, rank: 16 },
+        { country: "Germany", value: 2.05, rank: 17 },
+        { country: "Czech Republic", value: 2.1, rank: 18 },
+        { country: "United Kingdom", value: 2.25, rank: 19 },
+        { country: "Uruguay", value: 2.4, rank: 20 },
+        { country: "South Korea", value: 2.4, rank: 21 },
+        { country: "Estonia", value: 2.5, rank: 22 },
+        { country: "Malta", value: 2.55, rank: 23 },
+        { country: "France", value: 2.55, rank: 24 },
+        { country: "Slovakia", value: 2.6, rank: 25 },
+        { country: "Spain", value: 2.6, rank: 26 },
+        { country: "Sweden", value: 2.65, rank: 27 },
+        { country: "Poland", value: 2.7, rank: 28 },
+        { country: "Latvia", value: 2.75, rank: 29 },
+        { country: "Cyprus", value: 2.75, rank: 30 },
+        { country: "Mauritius", value: 2.8, rank: 31 },
+        { country: "Italy", value: 2.95, rank: 32 },
+        { country: "Greece", value: 2.95, rank: 33 },
+        { country: "Costa Rica", value: 3, rank: 34 },
+        { country: "Croatia", value: 3.05, rank: 35 },
+        { country: "Romania", value: 3.2, rank: 36 },
+        { country: "Bahamas", value: 3.2, rank: 37 },
+        { country: "Chile", value: 3.3, rank: 38 },
+        { country: "Argentina", value: 3.3, rank: 39 },
+        { country: "Mongolia", value: 3.3, rank: 40 },
+        { country: "Lithuania", value: 3.45, rank: 41 },
+        { country: "Seychelles", value: 3.55, rank: 42 },
+        { country: "Bulgaria", value: 3.65, rank: 43 },
+        { country: "United States of America", value: 3.7, rank: 44 },
+        { country: "Hungary", value: 3.75, rank: 45 },
+        { country: "Albania", value: 3.75, rank: 46 },
+        { country: "Montenegro", value: 3.8, rank: 47 },
+        { country: "Belize", value: 3.8, rank: 48 },
+        { country: "Israel", value: 3.85, rank: 49 },
+        { country: "Singapore", value: 4, rank: 50 },
+        { country: "Ghana", value: 4.1, rank: 51 },
+        { country: "Botswana", value: 4.1, rank: 52 },
+        { country: "Moldova", value: 4.1, rank: 53 },
+        { country: "Malaysia", value: 4.35, rank: 54 },
+        { country: "Macedonia", value: 4.4, rank: 55 },
+        { country: "Jamaica", value: 4.4, rank: 56 },
+        { country: "South Africa", value: 4.45, rank: 57 },
+        { country: "Suriname", value: 4.45, rank: 58 },
+        { country: "Republic of Serbia", value: 4.5, rank: 59 },
+        { country: "Bhutan", value: 4.5, rank: 60 },
+        { country: "Tunisia", value: 4.55, rank: 61 },
+        { country: "Guyana", value: 4.55, rank: 62 },
+        { country: "Senegal", value: 4.6, rank: 63 },
+        { country: "Namibia", value: 4.6, rank: 64 },
+        { country: "Indonesia", value: 4.6, rank: 65 },
+        { country: "Sierra Leone", value: 4.7, rank: 66 },
+        { country: "Panama", value: 4.75, rank: 67 },
+        { country: "Madagascar", value: 4.75, rank: 68 },
+        { country: "India", value: 4.75, rank: 69 },
+        { country: "Dominican Republic", value: 4.75, rank: 70 },
+        { country: "Malawi", value: 4.8, rank: 71 },
+        { country: "Georgia", value: 4.85, rank: 72 },
+        { country: "Kosovo", value: 4.9, rank: 73 },
+        { country: "Armenia", value: 4.9, rank: 74 },
+        { country: "Papua New Guinea", value: 4.95, rank: 75 },
+        { country: "Lesotho", value: 4.95, rank: 76 },
+        { country: "Ecuador", value: 4.95, rank: 77 },
+        { country: "Brazil", value: 4.95, rank: 78 },
+        { country: "Sri Lanka", value: 5, rank: 79 },
+        { country: "Nepal", value: 5, rank: 80 },
+        { country: "Bosnia and Herzegovina", value: 5, rank: 81 },
+        { country: "Paraguay", value: 5.05, rank: 82 },
+        { country: "Philippines", value: 5.15, rank: 83 },
+        { country: "Bolivia", value: 5.2, rank: 84 },
+        { country: "Peru", value: 5.25, rank: 85 },
+        { country: "Liberia", value: 5.25, rank: 86 },
+        { country: "Benin", value: 5.35, rank: 87 },
+        { country: "Colombia", value: 5.45, rank: 88 },
+        { country: "Maldives", value: 5.45, rank: 89 },
+        { country: "Kenya", value: 5.5, rank: 90 },
+        { country: "Gambia", value: 5.55, rank: 91 },
+        { country: "Mexico", value: 5.55, rank: 92 },
+        { country: "Morocco", value: 5.65, rank: 93 },
+        { country: "Zambia", value: 5.65, rank: 94 },
+        { country: "El Salvador", value: 5.65, rank: 95 },
+        { country: "Kuwait", value: 5.75, rank: 96 },
+        { country: "Bangladesh", value: 5.75, rank: 97 },
+        { country: "Algeria", value: 5.75, rank: 98 },
+        { country: "Ukraine", value: 5.9, rank: 99 },
+        { country: "Brunei", value: 5.95, rank: 100 },
+        { country: "Kazakhstan", value: 5.95, rank: 101 },
+        { country: "United Republic of Tanzania", value: 6, rank: 102 },
+        { country: "Ivory Coast", value: 6.05, rank: 103 },
+        { country: "Thailand", value: 6.05, rank: 104 },
+        { country: "Guinea-Bissau", value: 6.05, rank: 105 },
+        { country: "Togo", value: 6.05, rank: 106 },
+        { country: "Guatemala", value: 6.1, rank: 107 },
+        { country: "Niger", value: 6.1, rank: 108 },
+        { country: "Mauritania", value: 6.15, rank: 109 },
+        { country: "Jordan", value: 6.15, rank: 110 },
+        { country: "Qatar", value: 6.2, rank: 111 },
+        { country: "Nigeria", value: 6.25, rank: 112 },
+        { country: "Honduras", value: 6.25, rank: 113 },
+        { country: "Comoros", value: 6.3, rank: 114 },
+        { country: "United Arab Emirates", value: 6.3, rank: 115 },
+        { country: "Turkey", value: 6.35, rank: 116 },
+        { country: "Oman", value: 6.35, rank: 117 },
+        { country: "Kyrgyzstan", value: 6.35, rank: 118 },
+        { country: "Vietnam", value: 6.45, rank: 119 },
+        { country: "Lebanon", value: 6.45, rank: 120 },
+        { country: "Uganda", value: 6.5, rank: 121 },
+        { country: "Pakistan", value: 6.5, rank: 122 },
+        { country: "Eswatini", value: 6.5, rank: 123 },
+        { country: "Cuba", value: 6.6, rank: 124 },
+        { country: "Mozambique", value: 6.65, rank: 125 },
+        { country: "Djibouti", value: 6.7, rank: 126 },
+        { country: "Rwanda", value: 6.75, rank: 127 },
+        { country: "Gabon", value: 6.75, rank: 128 },
+        { country: "Laos", value: 6.9, rank: 129 },
+        { country: "Uzbekistan", value: 6.9, rank: 130 },
+        { country: "Cambodia", value: 6.9, rank: 131 },
+        { country: "Guinea", value: 6.95, rank: 132 },
+        { country: "Belarus", value: 7, rank: 133 },
+        { country: "Egypt", value: 7.05, rank: 134 },
+        { country: "Angola", value: 7.05, rank: 135 },
+        { country: "Ethiopia", value: 7.1, rank: 136 },
+        { country: "Bahrain", value: 7.15, rank: 137 },
+        { country: "China", value: 7.15, rank: 138 },
+        { country: "Azerbaijan", value: 7.2, rank: 139 },
+        { country: "Mali", value: 7.25, rank: 140 },
+        { country: "Turkmenistan", value: 7.3, rank: 141 },
+        { country: "Tajikistan", value: 7.3, rank: 142 },
+        { country: "Russia", value: 7.35, rank: 143 },
+        { country: "Burundi", value: 7.35, rank: 144 },
+        { country: "Haiti", value: 7.4, rank: 145 },
+        { country: "Iraq", value: 7.4, rank: 146 },
+        { country: "Burkina Faso", value: 7.45, rank: 147 },
+        { country: "Zimbabwe", value: 7.55, rank: 148 },
+        { country: "Saudi Arabia", value: 7.55, rank: 149 },
+        { country: "Nicaragua", value: 7.6, rank: 150 },
+        { country: "Iran", value: 7.65, rank: 151 },
+        { country: "Cameroon", value: 7.75, rank: 152 },
+        { country: "Republic of the Congo", value: 7.8, rank: 153 },
+        { country: "Chad", value: 7.85, rank: 154 },
+        { country: "Eritrea", value: 7.95, rank: 155 },
+        { country: "Venezuela", value: 7.95, rank: 156 },
+        { country: "Somalia", value: 7.95, rank: 157 },
+        { country: "Equatorial Guinea", value: 8.05, rank: 158 },
+        { country: "Libya", value: 8.1, rank: 159 },
+        { country: "Democratic Republic of the Congo", value: 8.15, rank: 160 },
+        { country: "Sudan", value: 8.25, rank: 161 },
+        { country: "Myanmar", value: 8.45, rank: 162 },
+        { country: "Afghanistan", value: 8.45, rank: 163 },
+        { country: "Syria", value: 8.6, rank: 164 },
+        { country: "Central African Republic", value: 8.65, rank: 165 },
+        { country: "Yemen", value: 8.85, rank: 166 },
+        { country: "South Sudan", value: 8.95, rank: 167 },
+    ];
+
+    let ascendingOrder = true;
+
+    function getColor(value) {
+        if (value === 0) {
+            return '#808080'; 
+        }
+        return value > 9 ? '#8B0000' :
+            value > 8 ? '#FF0000' :
+            value > 7 ? '#FF4500' :
+            value > 6 ? '#FF6347' :
+            value > 5 ? '#FFA500' :
+            value > 4 ? '#FFD700' :
+            value > 3 ? '#ADFF2F' :
+            value > 2 ? '#7CFC00' :
+                        '#008000';
+    }
+
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend'),
+            grades = [0, 2, 3, 4, 5, 6, 7, 8, 9], // Intervalle angepasst
+            labels = [];
+
+        // Schleife durch die Intervalle und Generierung der Legenden-Einträge
+        for (var i = 0; i < grades.length; i++) {
+            div.innerHTML +=
+                '<i style="background:' + getColor(grades[i] + 0.1) + '"></i> ' +
+                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+
+        return div;
+    };
+
+legend.addTo(map);
+
+
+    function getBackgroundColor(value) {
+        if (value === 0) {
+            return '#D3D3D3'; 
+        }
+        return value > 9 ? '#8B0000' :
+            value > 8 ? '#FF6347' :
+            value > 7 ? '#FF7F50' :
+            value > 6 ? '#FF8C00' :
+            value > 5 ? '#FFA500' :
+            value > 4 ? '#FFD700' :
+            value > 3 ? '#ADFF2F' :
+            value > 2 ? '#98FB98' :
+                        '#66CDAA';
+    }
+
+    function getVoltageLevel(value) {
+        if (value <= 2) return "Geringe Spannung";
+        if (value > 2 && value <= 3) return "Leichte Spannung";
+        if (value > 3 && value <= 4) return "Moderate Spannung";
+        if (value > 4 && value <= 5) return "Mittlere Spannung";
+        if (value > 5 && value <= 6) return "Erhöhte Spannung";
+        if (value > 6 && value <= 7) return "Intensive Spannung";
+        if (value > 7 && value <= 8) return "Hohe Spannung";
+        if (value > 8 && value <= 9) return "Extrem Hohe Spannung";
+        return "Unbekannte Spannung"; // Fallback für Werte über 9
+    }
+        
+    function toggleSortOrder() {
+        ascendingOrder = !ascendingOrder;
+        showRankList();
+    }
+
+    function showRankList() {
+        const rankListDiv = document.getElementById('rankList');
+        let sortedData = [...countryData];
+
+        if (ascendingOrder) {
+            sortedData.sort((a, b) => a.rank - b.rank);
+        } else {
+            sortedData.sort((a, b) => b.rank - a.rank);
+        }
+
+        let tableContent = `
+            <button class="sortButton" onclick="toggleSortOrder()">Sortieren (${ascendingOrder ? 'Absteigend' : 'Aufsteigend'})</button>
+            <a href="Bürgerkrieg-Index.xlsx" download>
+                <button class="sortButton">Download Excel</button>
+            </a>
+            <table>
+                <tr>
+                    <th>Rang</th>
+                    <th>Land</th>
+                    <th>Bürgerkriegsindex</th>
+                    <th>Spannungslevel</th>
+                </tr>
+        `;
+        sortedData.forEach(country => {
+            const color = getColor(country.value);
+            const backgroundColor = getBackgroundColor(country.value);
+            const voltageLevel = getVoltageLevel(country.value);
+            tableContent += `
+                <tr style="--border-color: ${color}; --background-color: ${backgroundColor}" data-color>
+                    <td>${country.rank}</td>
+                    <td>${country.country}</td>
+                    <td>${country.value}</td>
+                    <td class="voltageLevel">${voltageLevel}</td>
+                </tr>
+            `;
+        });
+        tableContent += '</table>';
+        rankListDiv.innerHTML = tableContent;
+    }
+
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.section');
+        sections.forEach(section => section.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+
+        if (sectionId === 'Weltkarte' && !mapInitialized) {
+            initializeMap();
+        } else if (sectionId === 'Rangliste') {
+            showRankList();
+        }
+    }
+    
+    function initializeMap() {
+        mapInitialized = true;
+
+        const geoJsonUrl = "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json";
+
+        const map = L.map('map', {
+            crs: L.CRS.EPSG3857,
+            maxBoundsViscosity: 1.0,
+            maxBounds: [[-90, -180], [90, 180]],  
+        }).setView([20, 0], 2);
+
+        var legend = L.control({ position: 'bottomright' });
+
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend'),
+                intervals = [
+                    { name: "Geringe Spannung", range: [0, 2] },
+                    { name: "Leichte Spannung", range: [2, 3] },
+                    { name: "Moderate Spannung", range: [3, 4] },
+                    { name: "Mittlere Spannung", range: [4, 5] },
+                    { name: "Erhöhte Spannung", range: [5, 6] },
+                    { name: "Intensive Spannung", range: [6, 7] },
+                    { name: "Hohe Spannung", range: [7, 8] },
+                    { name: "Extrem hohe Spannung", range: [8, Infinity] },
+                ];
+
+            // Schleife durch die Intervalle und Generierung der Legenden-Einträge
+        intervals.forEach(function (interval) {
+            div.innerHTML +=
+                '<div class="legend-item">' +
+                '<i class="legend-color-box" style="background:' + getColor(interval.range[0] + 0.1) + '"></i>' +
+                '<span>' + interval.name + ' (' + interval.range[0] + '-' + (interval.range[1] === Infinity ? '<' : interval.range[1]) + ')</span>' +
+                '</div>';
+        });
+
+        return div;
+        };
+
+        legend.addTo(map);
+
+        
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors',
+            noWrap: true  
+        }).addTo(map);
+
+        fetch(geoJsonUrl)
+                    .then(response => response.json())
+                    .then(geoData => {
+                        L.geoJson(geoData, {
+                            style: function(feature) {
+                                const country = feature.properties.name;
+                                const countryInfo = countryData.find(c => c.country === country);
+                                const value = countryInfo ? countryInfo.value : 0;
+                                return {
+                                    fillColor: getColor(value),
+                                    weight: 1,
+                                    opacity: 1,
+                                    color: 'white',
+                                    fillOpacity: 0.7
+                                };
+                            },
+                            onEachFeature: function(feature, layer) {
+                                const country = feature.properties.name;
+                                const countryInfo = countryData.find(c => c.country === country);
+                                const value = countryInfo ? countryInfo.value : "Keine Daten";
+                                const rank = countryInfo ? countryInfo.rank : "Keine Daten";
+                                layer.bindPopup(`
+                                    <strong>${country}</strong><br>
+                                    Wert: ${value}<br>
+                                    Rang: ${rank}
+                                `);
+                            }
+                        }).addTo(map);
+                    });
+    }
+    function showCountryInfo() {
+            const selectedCountry = document.getElementById('countrySelect').value;
+            const countryInfo = countryData.find(c => c.country === selectedCountry);
+
+            if (countryInfo) {
+                document.getElementById('countryInfo').style.display = 'block';
+                document.getElementById('countryInfo').innerHTML = `
+                    <strong>${countryInfo.country}</strong><br>
+                    Rang: ${countryInfo.rank}<br>
+                    Wert: ${countryInfo.value}
+                `;
+            } else {
+                document.getElementById('countryInfo').style.display = 'none';
+            }
+        }
+    </script>
+    <script>
+        let currentSlideIndex = 0;
+    
+        function showSlide(index) {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.querySelector('.mySlides').style.display = 'block';
+                    slide.querySelector('.caption').style.display = 'block';
+                } else {
+                    slide.querySelector('.mySlides').style.display = 'none';
+                    slide.querySelector('.caption').style.display = 'none';
+                }
+            });
+        }
+    
+        function plusDivs(n) {
+            const slides = document.querySelectorAll('.slide');
+            currentSlideIndex = (currentSlideIndex + n + slides.length) % slides.length;
+            showSlide(currentSlideIndex);
+        }
+    
+        // Starte mit dem ersten Bild
+        showSlide(currentSlideIndex);
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            const callout = document.querySelector('.callout');
+            callout.style.display = 'block'; // Zeige das Popup immer beim Laden der Seite
+        });
+    </script>
+    
+</head>
+<body>
+    <header>
+        <h1>Bürgerkrieg-Index</h1>
+        <nav class="menu">
+            <a href="javascript:void(0);" onclick="showSection('start')">Start</a>
+            <a href="javascript:void(0);" onclick="showSection('Weltkarte')">Weltkarte</a>
+            <a href="javascript:void(0);" onclick="showSection('Rangliste')">Rangliste</a>
+            <a href="javascript:void(0);" onclick="showSection('methodik')">Methodik</a>
+            <a href="javascript:void(0);" onclick="showSection('impressum')">Impressum</a>
+        </nav>
+    </header>
+
+    <main>
+        <div id="Rangliste" class="section">
+            <div id="rankList"></div>
+        </div>
+
+        <section id="start" class="section active">
+            <h2>Einführung</h2>
+            <p>Der Bürgerkrieg-Index schätzt die Eintrittsgefahr eines Bürgerkrieges anhand verschiedener Faktoren der Ungleichheit ein. Berücksichtigt werden die politische, religiöse und wirtschaftliche Ungleichheit. <br><br>
+
+                Durch das Analysieren vergangener Bürgerkriege wurden die Faktoren, die vermutlich zum Konflikt geführt haben, herausgearbeitet. Anschliessend wurden diese Faktoren mit passenden Indizes in Verbindung gebracht. Mithilfe einer Formel, die alle Indizes zusammenführt, wird ein Endwert berechnet, welcher zwischen 1 und 10 liegt. Je höher dieser Endwert ist, desto höher ist das Risiko für die Entstehung eines Bürgerkriegs.<br><br>
+                
+                Mit dieser Zahl lässt sich unter gewissen Vorbehalten die aktuelle Gefahr eines Bürgerkrieges in einem beliebigen Land abschätzen und quantifizieren. Es wird zwischen acht Kategorien unterschieden: geringe Spannung, leichte Spannung, moderate Spannung, mittlere Spannung, erhöhte Spannung, intensive Spannung, hohe Spannung und extrem hohe Spannung.<br><br>
+                
+                Nützlich ist der Index vor allem, um die aktuelle interne Gefahrenlage in den einzelnen Ländern einschätzen und beschreiben zu können. Damit lassen sich verschiedene Länder auch untereinander vergleichen. So haben Unternehmen beispielsweise die Möglichkeit, die Risiken einer Investition zu überprüfen, während auch Einzelpersonen die Risiken einer Reise festlegen können.
+                </p>
+                <div class="slideshow-container">
+                    <div class="slide">
+                        <img class="mySlides" src="Syrien.jpg" style="display: block;">
+                        <div class="caption" style="display: block;">Syrien (UNRWA/Reuters)</div>
+                    </div>
+                    <div class="slide">
+                        <img class="mySlides" src="Äthiopien.jpg" style="display: none;">
+                        <div class="caption" style="display: none;">Äthiopien (Yasuyoshi Chiba (AFP))</div>
+                    </div>
+                    <div class="slide">
+                        <img class="mySlides" src="Äthiopien2.jpg" style="display: none;">
+                        <div class="caption" style="display: none;">Äthiopien (OVB Heimatzeitungen, 2025)</div>
+                    </div>
+                    <div class="slide">
+                        <img class="mySlides" src="Sudan.jpg" style="display: none;">
+                        <div class="caption" style="display: none;">Sudan (Dagmar Wittek, Basler Zeitung, 2010)</div>
+                    </div>
+                    <div class="slide">
+                        <img class="mySlides" src="Myanmar.jpg" style="display: none;">
+                        <div class="caption" style="display: none;">Myanmar (AP News)</div>
+                    </div>
+                    
+                    <button class="w3-button w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
+                    <button class="w3-button w3-display-right" onclick="plusDivs(1)">&#10095;</button>
+                </div>
+            <div class="callout">
+                <div class="callout-header">Über diese Webseite:</div>
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                <div class="callout-container">
+                    <p>Diese Webseite entstand im Rahmen eines Schulprojekts und ist nicht für die wissenschaftliche Weiterverwendung vorgesehen. <br><br>
+                        Viel Spaß auf der Webseite!
+                    </p>
+                </div>
+            </div>
+                
+                
+        </section>
+
+        <section id="Weltkarte" class="section">
+            <h2>Interaktive Weltkarte</h2>
+
+            <!-- Dropdown-Menü -->
+            <select id="countrySelect" onchange="showCountryInfo()">
+                <option value="Afghanistan">Afghanistan</option>
+                <option value="Egypt">Ägypten</option>
+                <option value="Albania">Albanien</option>
+                <option value="Algeria">Algerien</option>
+                <option value="Angola">Angola</option>
+                <option value="Equatorial Guinea">Äquatorialguinea</option>
+                <option value="Argentina">Argentinien</option>
+                <option value="Armenia">Armenien</option>
+                <option value="Azerbaijan">Aserbaidschan</option>
+                <option value="Ethiopia">Äthiopien</option>
+                <option value="Australia">Australien</option>
+                <option value="Bahamas">Bahamas</option>
+                <option value="Bahrain">Bahrain</option>
+                <option value="Bangladesh">Bangladesch</option>
+                <option value="Belgium">Belgien</option>
+                <option value="Belize">Belize</option>
+                <option value="Benin">Benin</option>
+                <option value="Bhutan">Bhutan</option>
+                <option value="Bolivia">Bolivien</option>
+                <option value="Bosnia and Herzegovina">Bosnien und Herzegowina</option>
+                <option value="Botswana">Botswana</option>
+                <option value="Brazil">Brasilien</option>
+                <option value="Brunei">Brunei</option>
+                <option value="Bulgaria">Bulgarien</option>
+                <option value="Burkina Faso">Burkina Faso</option>
+                <option value="Burundi">Burundi</option>
+                <option value="Chile">Chile</option>
+                <option value="China">China</option>
+                <option value="Costa Rica">Costa Rica</option>
+                <option value="Denmark">Dänemark</option>
+                <option value="Democratic Republic of the Congo">Demokratische Republik Kongo</option>
+                <option value="Germany">Deutschland</option>
+                <option value="Dominican Republic">Dominikanische Republik</option>
+                <option value="Djibouti">Dschibuti</option>
+                <option value="Ecuador">Ecuador</option>
+                <option value="El Salvador">El Salvador</option>
+                <option value="Ivory Coast">Elfenbeinküste</option>
+                <option value="Eritrea">Eritrea</option>
+                <option value="Estonia">Estland</option>
+                <option value="Eswatini">Eswatini</option>
+                <option value="Finland">Finnland</option>
+                <option value="France">Frankreich</option>
+                <option value="Gabon">Gabun</option>
+                <option value="Gambia">Gambia</option>
+                <option value="Georgia">Georgien</option>
+                <option value="Ghana">Ghana</option>
+                <option value="Greece">Griechenland</option>
+                <option value="Guatemala">Guatemala</option>
+                <option value="Guinea">Guinea</option>
+                <option value="Guinea-Bissau">Guinea-Bissau</option>
+                <option value="Guyana">Guyana</option>
+                <option value="Haiti">Haiti</option>
+                <option value="Honduras">Honduras</option>
+                <option value="India">Indien</option>
+                <option value="Indonesia">Indonesien</option>
+                <option value="Iraq">Irak</option>
+                <option value="Iran">Iran</option>
+                <option value="Ireland">Irland</option>
+                <option value="Iceland">Island</option>
+                <option value="Israel">Israel</option>
+                <option value="Italy">Italien</option>
+                <option value="Jamaica">Jamaika</option>
+                <option value="Japan">Japan</option>
+                <option value="Yemen">Jemen</option>
+                <option value="Jordan">Jordanien</option>
+                <option value="Cambodia">Kambodscha</option>
+                <option value="Cameroon">Kamerun</option>
+                <option value="Canada">Kanada</option>
+                <option value="Kazakhstan">Kasachstan</option>
+                <option value="Qatar">Katar</option>
+                <option value="Kenya">Kenia</option>
+                <option value="Kyrgyzstan">Kirgisistan</option>
+                <option value="Colombia">Kolumbien</option>
+                <option value="Comoros">Komoren</option>
+                <option value="Kosovo">Kosovo</option>
+                <option value="Croatia">Kroatien</option>
+                <option value="Cuba">Kuba</option>
+                <option value="Kuwait">Kuwait</option>
+                <option value="Laos">Laos</option>
+                <option value="Lesotho">Lesotho</option>
+                <option value="Latvia">Lettland</option>
+                <option value="Lebanon">Libanon</option>
+                <option value="Liberia">Liberia</option>
+                <option value="Libya">Libyen</option>
+                <option value="Lithuania">Litauen</option>
+                <option value="Luxembourg">Luxemburg</option>
+                <option value="Madagascar">Madagaskar</option>
+                <option value="Malawi">Malawi</option>
+                <option value="Malaysia">Malaysia</option>
+                <option value="Maldives">Malediven</option>
+                <option value="Mali">Mali</option>
+                <option value="Malta">Malta</option>
+                <option value="Morocco">Marokko</option>
+                <option value="Mauritania">Mauretanien</option>
+                <option value="Mauritius">Mauritius</option>
+                <option value="Mexico">Mexiko</option>
+                <option value="Moldova">Moldawien</option>
+                <option value="Mongolia">Mongolei</option>
+                <option value="Montenegro">Montenegro</option>
+                <option value="Mozambique">Mosambik</option>
+                <option value="Myanmar">Myanmar</option>
+                <option value="Namibia">Namibia</option>
+                <option value="Nepal">Nepal</option>
+                <option value="New Zealand">Neuseeland</option>
+                <option value="Nicaragua">Nicaragua</option>
+                <option value="Netherlands">Niederlande</option>
+                <option value="Niger">Niger</option>
+                <option value="Nigeria">Nigeria</option>
+                <option value="Macedonia">Nordmazedonien</option>
+                <option value="Norway">Norwegen</option>
+                <option value="Oman">Oman</option>
+                <option value="Austria">Österreich</option>
+                <option value="Pakistan">Pakistan</option>
+                <option value="Panama">Panama</option>
+                <option value="Papua New Guinea">Papua-Neuguinea</option>
+                <option value="Paraguay">Paraguay</option>
+                <option value="Peru">Peru</option>
+                <option value="Philippines">Philippinen</option>
+                <option value="Poland">Polen</option>
+                <option value="Portugal">Portugal</option>
+                <option value="Republic of the Congo">Republik Kongo</option>
+                <option value="Rwanda">Ruanda</option>
+                <option value="Romania">Rumänien</option>
+                <option value="Russia">Russland</option>
+                <option value="Zambia">Sambia</option>
+                <option value="Saudi Arabia">Saudi-Arabien</option>
+                <option value="Sweden">Schweden</option>
+                <option value="Switzerland">Schweiz</option>
+                <option value="Senegal">Senegal</option>
+                <option value="Republic of Serbia">Serbien</option>
+                <option value="Seychelles">Seychellen</option>
+                <option value="Sierra Leone">Sierra Leone</option>
+                <option value="Zimbabwe">Simbabwe</option>
+                <option value="Singapore">Singapur</option>
+                <option value="Slovakia">Slowakei</option>
+                <option value="Slovenia">Slowenien</option>
+                <option value="Somalia">Somalia</option>
+                <option value="Spain">Spanien</option>
+                <option value="Sri Lanka">Sri Lanka</option>
+                <option value="South Africa">Südafrika</option>
+                <option value="Sudan">Sudan</option>
+                <option value="South Korea">Südkorea</option>
+                <option value="South Sudan">Südsudan</option>
+                <option value="Suriname">Suriname</option>
+                <option value="Syria">Syrien</option>
+                <option value="Tajikistan">Tadschikistan</option>
+                <option value="United Republic of Tanzania">Tansania</option>
+                <option value="Thailand">Thailand</option>
+                <option value="Togo">Togo</option>
+                <option value="Chad">Tschad</option>
+                <option value="Czech Republic">Tschechien</option>
+                <option value="Tunisia">Tunesien</option>
+                <option value="Turkey">Türkei</option>
+                <option value="Turkmenistan">Turkmenistan</option>
+                <option value="Uganda">Uganda</option>
+                <option value="Ukraine">Ukraine</option>
+                <option value="Hungary">Ungarn</option>
+                <option value="Uruguay">Uruguay</option>
+                <option value="Uzbekistan">Usbekistan</option>
+                <option value="Venezuela">Venezuela</option>
+                <option value="United Arab Emirates">Vereinigte Arabische Emirate</option>
+                <option value="United States of America">Vereinigte Staaten</option>
+                <option value="United Kingdom">Vereinigtes Königreich</option>
+                <option value="Vietnam">Vietnam</option>
+                <option value="Belarus">Weißrussland</option>
+                <option value="Central African Republic">Zentralafrikanische Republik</option>
+                <option value="Cyprus">Zypern</option>
+
+
+
+            </select>
+
+            <div id="countryInfo"></div>
+
+            <div id="map"></div>
+        </section>
+
+        <section id="methodik" class="section">
+            <h2>Methodik</h2>
+            <h3>Daten</h3>
+            <div class="daten-text">
+                Alle zur Berechnung verwendeten Daten stammen aus dem Jahr 2023 und sind durch verschiedene Nichtregierungsorganisationen erhoben worden. 
+                Im Index enthalten sind 167 von den Vereinten Nationen anerkannte Länder. Nicht enthalten sind kleinere Inselstaaten oder Territorien. Ausserdem wurden annektierte Regionen nicht berücksichtigt. Deshalb beläuft sich die Zahl der untersuchten Länder nur auf 167. <br><br>
+                Um die zu untersuchenden Faktoren herauszuarbeiten, wurden 15 Bürgerkriege analysiert und die entscheidendsten Entstehungsfaktoren abgeleitet. Anschliessend wurde zu jedem der Faktoren ein passender Index gesucht. Zu den untersuchten Krisen gehören die Bürgerkriege in folgenden Ländern: Algerien, Angola, Nigeria, Jugoslawien, Kolumbien, Korea, Haiti, Jemen, Myanmar, Somalia, Rhodesien, Sri Lanka, Sudan, Syrien und Vietnam.
+            </div>
+            <h3>Faktoren</h3>
+            <div class="daten-text">
+                Die Ungleichheitsfaktoren, die in die Bewertung des Bürgerkrieg-Index geflossen sind, gehören laut Laura Gerken alle zu den sozialen Ungleichheiten (politische, religiöse und wirtschaftliche Ungleichheit) (Gerken, 2023). Um die Ungleichheiten für die Entstehung des Bürgerkrieg-Index zu definieren, wird sich auf die Definition des Soziologen Reinhard Kreckel gestützt: <br><br><br>
+                «Die Möglichkeiten des Zugangs zu allgemein verfügbaren und erstrebenswerten sozialen
+                Gütern und/oder zu sozialen Positionen, die mit ungleichen Macht- und/oder Interaktionsmöglichkeiten ausgestattet sind, dauerhafte Einschränkungen erfahren und dadurch die Lebenschancen der betroffenen Individuen, Gruppen oder Gesellschaften beeinträchtigt bzw. begünstigt werden» (Kreckel, 2004)
+            </div>
+            <h3>Politische Ungleichheit</h3>
+            <div class="daten-text">
+                Politische Ungleichheiten können sich auf verschiedene Art und Weise ausdrücken, zum Beispiel über gar nicht existierende Wahlen (Myanmar), Bereicherung der politischen Eliten (Haiti), fehlende Gewaltenteilung (Afghanistan) oder den Ausschluss politischer Gegner von Wahlen (Sri Lanka).<br><br>
+                Um den Faktor politische Ungleichheit in die Kalkulierung miteinzubeziehen, wird der «Democracy Index» (DI) von «The Economist Group» verwendet. Dieser berücksichtigt die fünf Kategorien Wahlprozess und Pluralismus, Funktionsweise der Regierung, politische Beteiligung, politische Kultur und bürgerliche Freiheit für die Erstellung. So werden die benötigten Kriterien zur Überprüfung der politischen Ungleichheit abgedeckt und überprüft, wie demokratisch ein Land ist. In der Berechnung für den Bürgerkrieg-Index nimmt er 15 % ein. Dieser Faktor wurde unterdurchschnittlich gewertet, weil nur 6 von 15 Ländern betroffen waren und politische Ungleichheiten nicht direkt zu Gewaltausschreitungen führen.<br><br>
+                Politische Ungleichheiten zeichnen sich in 6 von 15 untersuchten Fallbeispielen als zentrales Element für die entstandenen Krisen ab (Kolumbien, Myanmar, Rhodesien, Sri Lanka, Sudan, Syrien, Nigeria). In den meisten Ländern zeigt sich das Problem im Bereich des Ausschlusses von politischen Gegnern aus der Politik, das heisst, ihnen werden die Stimmrechte und die Option, sich in die Regierung einzugliedern, vollständig entzogen, dies lässt sich gut am Beispiel von Rhodesien aufzeigen.<br>
+            </div>
+            <h3>Religiöse/ethnische Ungleichheiten</h3>
+            <div class="daten-text">
+                Wiederum können sich religiöse und ethnische Ungleichheiten unterschiedlich äussern, zum Beispiel in Form von Ausgrenzung bestimmter Religionen oder Ethnien (Angola) aus dem Alltagsleben oder durch Verfolgung (Sri Lanka).<br><br>
+                Um die Ungleichheiten aus religiösen und ethnischen Konflikten in der Berechnung zu berücksichtigen, wird der «Global Freedom Index» (GFI) von «Freedom House» in die Rechnung miteinbezogen. Dieser beinhaltet zu einem grossen Teil Religionsfreiheit, aber auch rechtliche Freiheit, Meinungsfreiheit und die Freiheit der persönlichen Autonomie sind in diesem Index enthalten. Aufgrund der sehr vielfältigen Datenlage des GFI und der Wichtigkeit der persönlichen Freiheit (kein anderer Faktor führte nach der Analyse zu mehr Krisen) wurden religiöse Ungleichheiten in der Bewertung mit 35 % gewichtet.<br><br>
+                Von den untersuchten Fallbeispielen treten bei acht Ländern starke Ungleichheiten im Bereich Religion oder Ethnie auf (Angola, Jugoslawien, Kolumbien, Jemen, Myanmar, Sri Lanka, Sudan und Syrien). Oftmals handelt es sich in den Fällen um Unterdrückung oder Ausschluss einer Religion oder Ethnie aus dem Alltagsleben. So zum Beispiel in Myanmar, wo die Christen im Land stark unter der buddhistischen Führung leiden.
+                    Im Falle des Bürgerkriegs in Jugoslawien spielte die Religion eine zentrale Rolle in der Entstehung und in der Erhaltung des Konflikts. Die verschiedenen Völker hassten sich vor allem aufgrund der verschiedenen Ansichten des Glaubens. Aus diesem Grund gab es während der Kriege in Jugoslawien gezielte Angriffe auf die gegnerischen Gotteshäuser (Mislav, 1995). Bis heute gibt es Auseinandersetzungen aufgrund des Zusammentreffens von römisch-katholischen, russisch-orthodoxen und muslimischen Anhängern in dieser Region.
+                    <br>
+            </div>
+            <h3>Wirtschaftliche Ungleichheit</h3>
+            <div class="daten-text">
+                Reichtum und Armut sind ein präsentes Thema in Krisengebieten, weil die Armut laut Dominic Rohner (2024) Kriege befeuert und so die betroffenen Leute immer ärmer werden. Durch das bleiben die Konflikte auch lange erhalten, bis sich das Land erholen kann (Rohner, 2024, S.). Wirtschaftliche Ungleichheit zeigt sich häufig in ausgeprägten Einkommensscheren oder in einer fehlenden wirtschaftlichen Entwicklung ganzer Regionen, die in der Folge von Armut geprägt sind. <br><br>
+                Um diese Probleme messbar zu machen, werden in der Berechnung für den Bürgerkrieg-Index sowohl der Gini-Index (GI) als auch der Palma-Index (PAI) berücksichtigt. Im Gini-Index wird beschrieben, wie ungleich das Einkommen über die ganze Bevölkerung verteilt ist, während im Palma-Index das Einkommen der reichsten 10 % mit dem der ärmsten 40 % verglichen wird. In der Berechnung zum Bürgerkrieg-Index sind wirtschaftliche Faktoren mit 15 % gewichtet. Diese 15 % setzten sich zu 2/3 aus dem Palma-Index und zu 1/3 aus dem Gini-Index zusammen, weil der Gini-Index im Vergleich eine weniger grosse Varianz zwischen den Ländern aufweist. Das Gesamtgewicht von 15 % ist unterdurchschnittlich, weil die Faktoren nicht breit genug aufgestellt sind und sich nur auf einen Teil der Wirtschaft konzentrieren. Dinge wie Konjunktur, Wachstum oder regionale Abhängigkeit sind nicht enthalten, weil es keine geeigneten Indizes gibt.<br><br>
+                In sieben von sechzehn untersuchten Ländern treten wirtschaftliche Ungleichheiten in den Vordergrund. (Angola, Jugoslawien, Kolumbien, Haiti, Rhodesien, Sudan und Syrien). Wie oben erwähnt sind einige von einer grossen regionalen Abhängigkeit betroffen, so zum Beispiel Syrien oder Kolumbien, die einen enormen Stadt-Land-Graben aufweisen. In den Ländern Jugoslawien, Haiti, Myanmar und Syrien ist die Einkommensschere besonders gross.<br>
+            </div>
+            <h3>Stabilität</h3>
+            <div class="daten-text">
+                Praktisch alle der untersuchten Beispiele sind instabile Länder, deren staatliche Strukturen massgeblich beschädigt sind. Symptome von Instabilität sind Volksaufstände (Myanmar), häufiges Auftreten krimineller und terroristischer Gruppierungen (Somalia), Fehlen der staatlichen Gewalt (Afghanistan), Korruption (Haiti), schlechte Infrastruktur (Sudan) und eine fehlende Wahrung der Menschenrechte (Syrien). All diese Faktoren werden für den Bürgerkrieg-Index durch den «Fragile State Index» (FSI) abgedeckt. Der «Fragile State Index» untersucht in vier unterschiedlichen Kategorien (innerer Zusammenhalt, wirtschaftliche, politische und soziale Stabilität) zwölf verschiedene Faktoren, die die Stabilität eines Staates bewerten. Der Stabilitätsfaktor ist mit 20 % gewichtet, weil der FSI ein sehr breites Feld an Faktoren abdeckt, aber ein Staat mit beschädigten Strukturen ist nicht automatisch einem internen Konflikt ausgesetzt. Beispiele für Länder, die einen hohen FSI haben, aber einen geringen Bürgerkriegsindex aufweisen, sind Madagaskar, Senegal oder Indien.
+            </div>
+            <h3>Frieden </h3>
+            <div class="daten-text">
+                Kriege beschreiben die Abwesenheit von Frieden, deshalb wurde der Frieden, obwohl er kein direktes Merkmal der Ungleichheit ist, auch in der Berechnung des Bürgerkriegs-Index berücksichtigt (Welt Friedens Dienst, 2024). Angegeben wurde der Frieden in Form des «Global Peace Index» (GFI). Dieser Index setzt sich zusammen aus Komponenten von laufenden nationalen und internationalen Konflikten, gesellschaftlicher Sicherheit und Militarisierung im Land.<br><br>
+                Von Bedeutung ist, dass auch bestehende internationale Krisen das Risiko für nationale Krisen erheblich steigern können. Ausserdem spielen gesellschaftliche Sicherheit und Militarisierung eine grosse Rolle, denn wenn sich eine unsichere Bevölkerung (durch viel Terrorismus oder Putschversuche) mit einer hohen Militarisierung kombiniert, die grosse Teile der Nation zudem nicht befürworten, erhöht dies das Potenzial für eine Eskalation erheblich. Diese Situationen lassen sich in den Fallbeispielen Mali oder Nigeria kombinieren, weil diese Krisen durch international operierende Gruppierungen ausgelöst oder zumindest verstärkt werden.<br><br>
+                Der Friedensfaktor wurde mit einer 15 % Gewichtung in den Index aufgenommen, weil der Frieden bereits in anderen Indizes enthalten ist und der Frieden nicht nur durch interne Faktoren gebrochen werden kann (Ukraine, Israel).
+            </div>
+            <h4>Berechnung</h4>
+            <h3>Skalierung</h3>
+            <div class="daten-text">
+                Alle verwendeten Indizes wurden in 10 jeweils gleich grosse Intervalle eingeteilt, wodurch sich ein einheitliches Punktesystem von 1 bis 10 erstellen lässt, mit dem alle Länder in jeder Kategorie ihre erreichte Punktzahl erhielten. Aus diesem Grund ergibt sich am Ende ein verständliches Ergebnis mit einer vertrauten Skala für jedes Land.
+            </div>
+            <h3>Gewichtung</h3>
+            <div class="daten-text">
+                Die verschiedenen Faktoren sind in der Berechnung des Index unterschiedlich gewichtet worden. Die verschiedenen Gewichtungen wurden oben bei der Beschreibung der Faktoren begründet und sind hier nochmals kurz aufgeführt: <br><br>
+                Politische Ungleichheit (DI): 0.15<br>Religiöse Ungleichheit (GFI): 0.35<br>Wirtschaftliche Ungleichheit (PAI, GI): 0.15<br>Stabilität (FSI): 0.20<br>Frieden (PEI): 0.15
+            </div>
+            <h3>Formel</h3>
+            <div class="daten-text">
+                Der Bürgerkriegsindex drückt sich in einer Zahl von 1 bis 10 aus. Mit aufsteigenden Werten erhöht sich die Gefahr für einen Bürgerkrieg. Es wird zwischen acht Stufen unterschieden, wie schwerwiegend das Risiko für einen Bürgerkrieg ist. Zusätzlich gibt es eine Farbskala, die aufsteigend von Dunkelgrün über Gelb und Orange bis Rot geht, um die Ergebnisse auf den ersten Blick einfach darzustellen.
+                <br><br>(FSI*0.20)+(GFI*0.35)+(PEI*0.15)+(DI*0.15)+(PAI*0.10)+(GI*0.05)
+            </div>
+            <h4>Kritik</h4>
+            <h3>Datenlücken</h3>
+            <div class="daten-text">
+                Ein Problem stellen die für gewisse Länder vereinzelt fehlenden Daten in einigen Indizes dar. Mit diesem Problem wurde in den wenigen Fällen folgendermassen umgegangen: In einem ersten Schritt wurde nach einem möglichst ähnlichen Index gesucht, danach wurde die Platzierung auf dem alternativen Index für die Punkteverteilung auf dem originalen angewendet, die Platzierung wurde also übernommen.<br><br>
+                Länder, die in nur ein bis zwei Indizes vorkamen, wurden aus der Rangliste gestrichen, genauso wie von der UN nicht anerkannte Territorien und sehr kleine Staaten. Dies geschah aufgrund der umstrittenen, nicht eindeutig geklärten Länderzugehörigkeit oder der schlechten Datenlage.
+            </div>
+            <h3>Wiederholte Gewichtung</h3>
+            <div class="daten-text">
+                In einigen Indizes wiederholen sich bestimmte Faktoren. So wird die politische 
+                Ungleichheit in drei Indizes aufgegriffen (Fragile State Index, Freedom Index, Democracy Index). Diese Redundanz führt zu einer höheren Gewichtung dieser Faktoren. 
+            </div>
+            <h3>Beispiele aus der Vergangenheit</h3>
+            <div class="daten-text">
+                Zusätzlich könnten die unterschiedlichen Geschichtsperioden, in denen sich die Kriege abgespielt haben, einen unkontrollierbaren Einfluss gehabt haben. Vermutlich haben sich die Faktoren, die zu einem Bürgerkrieg führen, im Verlaufe der letzten 100 Jahre verändert. Früher führten vermehrt die unterschiedlichen Ansichten über das perfekte Wirtschaftssystem (Kommunismus vs. Kapitalismus) zu Bürgerkriegen (Korea), wobei heute häufiger die religiöse Radikalisierung in den Vordergrund tritt (Afghanistan). Dieses Vorgehen ist insofern kritisch, als dass Faktoren, die in der Vergangenheit zu Konflikten geführt haben, in die heutige Zeit adaptiert wurden.
+            </div>
+            <h3>Gewichtung Stabilität</h3>
+            <div class="daten-text">
+                Es lässt sich ausserdem kritisieren, dass die allgemeine Stabilität und Freiheit eines Landes einen grossen Teil der Bewertung ausmachen. So machen Freiheit und Stabilität 55 % des Bürgerkriegsindexes aus.
+            </div>
+            <h3>Nicht jeder Faktor berücksichtigt</h3>
+            <div class="daten-text">
+                Es gibt nicht für alle herausgearbeiteten Faktoren numerische oder quantitative Indizes, deshalb konnte nicht ausnahmslos jeder Faktor berücksichtigt werden. Ein gutes Beispiel dafür ist die wirtschaftliche Vernachlässigung verschiedener Regionen im Land, für die es keinen geeigneten Index gibt. 
+            </div>
+
+        </section>
+
+        <section id="impressum" class="section">
+            <h2>Impressum</h2>
+            <h3>Bücher</h3>
+            <div class="daten-text">
+                Kreckel, R. (2004) Politische Soziologie der sozialen Ungleichheit. 3. Aufl., Frankfurt/New York: Campus
+            </div>
+            <h3>Journale</h3>
+            <div class="daten-text">
+                Friedel, A.-S. (2022). Ungleichheit. Aus Politik und Zeitgeschichte, S. 4-46. <br><br>
+                Gerken, L. (2023). Soziale Ungleichheit. Informationen zur politischen Bildung(354), S. 4-6.<br><br>
+                Mislav, K. (1995). Konfessionen und Kriegsgeschehen im ehemaligen Jugoslawien. Gesellschaften im Umbruch, S. 686-688. <br><br>
+                Thürriedl, K. (2012). Soziale Ungleichheit und Bildung. SSOAR, S. 20-31.
+            </div>
+            <h3>Zeitungsartikel</h3>
+            <div class="daten-text">
+                Amnesty International. (2013). Totgeschwiegenes Grauen. Abgerufen am 2. Dezember 2024 von Amnesty International: https://www.amnesty.ch/de/ueber-amnesty/publikationen/magazin-amnesty/2013-3/sri-lanka-totgeschwiegenes-grauen<br><br>
+                Beech, H. (2014). Inside the Kachin War Against Burma. Abgerufen am 3. Dezember 2024 von TIME: https://time.com/3598969/kachin-independence-army-kia-burma-myanmar-laiza/<br><br>
+                Die Fakten zum Krieg in Syrien. (2016). Abgerufen am 12. Dezember 2024 von DerSpiegel: https://www.spiegel.de/politik/ausland/krieg-in-syrien-alle-wichtigen-fakten-erklaert-endlich-verstaendlich-a-1057039.htmlhttps://www.spiegel.de/politik/ausland/krieg-in-syrien-alle-wichtigen-fakten-erklaert-endlich-verstaendlich-a-1057039.html<br><br>
+                Dowling, T. (2018). From peace Icon to pariah: Aung San Suu Kyi's fall from grace. Abgerufen am 3. Dezember 2024 von TheGuardian: https://www.theguardian.com/world/2018/nov/23/aung-san-suu-kyi-fall-from-grace-myanmar<br><br>
+                Ewe, K. (2024). How Myanmar's Civil War Could Actually End. Abgerufen am 3. Dezember 2024 von TIME: https://time.com/7160736/myanmar-coup-civil-war-conflict-timeline-endgame-explainer/<br><br>
+                Grossrieder, B., & Misteli, S. (2019). Massaker im Paradies –eine Chronologie des Bürgerkriegs in Sri Lanka. Abgerufen am 2. Dezember 2024 von NZZ: https://www.nzz.ch/international/terror-auf-der-paradiesinsel-chronologie-des-buergerkriegs-in-sri-lanka-ld.1482288<br><br>
+                Hindstrom, H. (2016). Burma's Transition to Civilian Rule hasn't Stopped the Abuses of Its Ethnic Wars. Abgerufen am 3. Dezember 2024 von TIME: https://time.com/4277328/burma-myanmar-suu-kyi-ethnic-wars/<br><br>
+                Müller, M. (2022). Breaking Bad in Myanmar: Die organisierte Kriminalität profitiert vom Chaos und flutet die Märkte mit synthetischen Drogen. Abgerufen am 3. Dezember 2024 von NZZ: https://www.nzz.ch/international/myanmar-das-volk-leidet-die-organisierte-kriminalitaet-blueht-ld.1703076<br><br>
+                Stürzinger , M. (2023). Vor 40 Jahren begann der Bürgerkrieg in Sri Lanka – die Tamilen haben den «Black July» bis heute nicht vergessen. Abgerufen am 2. Dezember 2024 von NZZ: https://www.nzz.ch/international/sri-lanka-die-tamilen-haben-den-black-july-nicht-vergessen-ld.1748659<br><br>
+            </div>
+            <h3>Webseiten</h3>
+            <div class="daten-text">
+                Bergstresser, H. (2024). Nigeria. Abgerufen am 16. Dezember 2024 von Bundeszentrale für politische Bildung: https://www.bpb.de/themen/kriege-konflikte/dossier-kriege-konflikte/176466/nigeria/<br><br>
+                Friedensbildung Baden-Württemberg. (2023). Kolumbien. Abgerufen am 20. Dezember 2024 von Friedensbildung Baden-Württemberg: https://www.friedensbildung-bw.de/kolumbien-konflikt<br><br>
+                Friedensbildung Baden-Württemberg. (2023). Sri Lanka. Abgerufen am 2. Dezember 2024 von Friedensbildung Baden-Württemberg: https://www.friedensbildung-bw.de/sri-lanka-krieg<br><br>
+                Friedensbildung Baden-Württemberg. (2024). Syrien. Abgerufen am 12. Dezember 2024 von Friedensbildung Baden-Württemberg: https://www.friedensbildung-bw.de/syrien-krieg<br><br>
+                Glawion , T. (2024). Haiti. Abgerufen am 10. Dezember 2024 von Bundeszentrale für politische Bildung: https://www.bpb.de/themen/kriege-konflikte/dossier-kriege-konflikte/328218/haiti/<br><br>
+                Heinze, M.-C. (2024). Jemen. Abgerufen am 10. Dezember 2024 von Bundeszentrale für politische Bildung: https://www.bpb.de/themen/kriege-konflikte/dossier-kriege-konflikte/54611/jemen/<br><br>
+                Hill, N. (2022). Colonialism and Genocide in Portuguese Africa. Abgerufen am 15. Dezember 2024 von Genocide Watch: https://www.genocidewatchblog.com/post/colonialism-and-genocide-in-portuguese-africa<br><br>
+                Kiesel, L. (2023). Rhodesian Bush War 1965-80. Abgerufen am 3. Dezember 2024 von U.S. Department of Defense: https://media.defense.gov/2023/Oct/23/2003326166/-1/-1/0/RhodesianBushWar_1965-80_20231204.PDF<br><br>
+                Mielke, K. (2024). Afghanistan. Abgerufen am 15. Dezember 2024 von Bundeszentrale für politische Bildung: https://www.bpb.de/themen/kriege-konflikte/dossier-kriege-konflikte/155323/afghanistan/<br><br>
+                Millet, A. R. (2024). Korean War. Abgerufen am 20. Dezember 2024 von Britannica: https://www.britannica.com/event/Korean-War<br><br>
+                Oeldemann, J., & Schedler, H. (16. Dezember 2000). Länderinfo: Bundesrepublik Jugoslawien. Abgerufen am 2024 von OST-WEST Europäische Perspektiven: https://www.owep.de/artikel/264-laenderinfo-bundesrepublik-jugoslawien<br><br>
+                Schwarz, C., & Huck, A. (2020). Kolumbien. Abgerufen am 20. Dezember 2024 von Bundeszentrale für politische Bildung: https://www.bpb.de/themen/kriege-konflikte/dossier-kriege-konflikte/54621/kolumbien/<br><br>
+                Strube-Edelmann, B. (2006). Der Darfur-Konflikt - Genese und Verlauf. Abgerufen am 2. Dezember 2024 von Deutscher Bundestag: https://www.bundestag.de/resource/blob/506736/933696cff380ce64d54317634af5202f/Der-Darfur-Konflikt-Genese-und-Verlauf.pdf<br><br>
+                Tagesschau. (2024). Jemen: Wie die Huthi mächtig wurden. Abgerufen am 10. Dezember 2024 von Tagesschau: https://www.tagesschau.de/ausland/jemen-geschichte-100.html<br><br>
+                Thett, K. (2012). Der Run auf Myanamr. Abgerufen am 3. Dezember 2024 von Tourism Watch: https://www.tourism-watch.de/artikel/schwerpunkt/der-run-auf-myanmar/<br><br>
+                United Nations. (2023). WIID Explorer. Abgerufen am 12. Dezember 2024 von unu-wider: https://www4.wider.unu.edu/?ind=1&type=ChoroplethSeq&year=70&byCountry=false&slider=buttons<br><br>
+                Welt Friedens Dienst. (2024). Welt Friedensdienst e. V. Abgerufen am 7. Januar 2025 von https://wfd.de/informieren/was-ist-frieden/<br><br>
+                Wieland, C. (2024). Syrien. Abgerufen am 12. Dezember 2024 von Bundeszentrale für politische Bildung: https://www.bpb.de/themen/kriege-konflikte/dossier-kriege-konflikte/54705/syrien/<br><br>
+                Wikipedia. (2024). Boko Haram. Abgerufen am 16. Dezember 2024 von Wikipedia: https://de.wikipedia.org/wiki/Boko_Haram<br><br>
+                Wikipedia. (2024). Krieg in Afghanistan. Abgerufen am 15. Dezember 2024 von Wikipedia: https://de.wikipedia.org/wiki/Krieg_in_Afghanistan<br><br>
+                Wikipedia. (2024). Southern Movement. Abgerufen am 10. Dezember 2024 von Wikipedia: https://en.wikipedia.org/wiki/Southern_Movement<br><br>
+            </div>
+            <h4>Verantwortung</h4>
+            <h3>Personen</h3>
+            <div class="daten-text">
+                Diese Webseite und die Inhalte wurden erarbeitet von: <br> Jonas Feierabend<br> Damian Werwitzke<br> Lars Nussbaumer</div>
+        </section>
+    </main>
+
+</body>
+</html>
